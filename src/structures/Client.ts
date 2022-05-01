@@ -7,7 +7,6 @@ import { CommandType } from "../types/Command";
 import { GuildConfig } from "../types/Guild";
 import { Event } from "./Event";
 import { GuildModel } from '../database/Schemas/Guild'
-import { Rank } from "../types/Group";
 
 const globPromise = promisify(glob);
 
