@@ -1,6 +1,6 @@
 import { client } from '../..';
 import { Command } from "../../structures/Command";
-import axios from 'axios'
+import axios from 'axios';
 import { UserRequestObject } from '../../types/User';
 import { UserModel } from '../../database/Schemas/User';
 import { MessageEmbed } from 'discord.js';
@@ -11,6 +11,7 @@ import { error_embed, warning_embed } from '../../structures/Functions';
 export default new Command({
      name: 'verify',
      description: `Verify your Roblox account with the bot`,
+     defaultPermission: true,
      options: [
           {
                name: 'username',
@@ -33,7 +34,7 @@ export default new Command({
           if (userCheck) return interaction.followUp({ embeds: [ error_embed(`That username is already verified to another user. If you believe this is a mistake, please contact an admin.`) ] });
 
           const verificationCheck = await VerifyModel.findOne({ discordId: interaction.user.id });
-          if (verificationCheck) return interaction.followUp({ embeds: [ warning_embed(`You've already started the verification process. Your code is ${verificationCheck.get('code')}`) ] });
+          if (verificationCheck) return interaction.followUp({ embeds: [ warning_embed(`You've already started the verification process. Your code is ${verificationCheck.get('code')}\n${username}`) ] });
 
           const tRaw = await axios.get(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userRequest.Id}&size=180x180&format=Png&isCircular=true`);
           const thumbnail = tRaw.data.data[0].imageUrl;

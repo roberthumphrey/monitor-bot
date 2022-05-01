@@ -7,6 +7,7 @@ import { CommandType } from "../types/Command";
 import { GuildConfig } from "../types/Guild";
 import { Event } from "./Event";
 import { GuildModel } from '../database/Schemas/Guild'
+import { Rank } from "../types/Group";
 
 const globPromise = promisify(glob);
 
@@ -35,7 +36,8 @@ export class ImperialClient extends Client {
 
      async registerCommands({ commands, guildId }: RegisterCommandsOptions) {
           if (guildId) {
-               this.guilds.cache.get(guildId)?.commands.set(commands);
+               const guild = this.guilds.cache.get(guildId);
+               guild?.commands.set(commands);
           } else {
                this.application?.commands.set(commands);
           }
@@ -79,5 +81,9 @@ export class ImperialClient extends Client {
           guildConfigs.forEach(config => {
                this.configs.set(config.id, config);
           });
+     }
+
+     updateConfig(config: GuildConfig) {
+          this.configs.set(config.id, config);
      }
 }
