@@ -2,6 +2,7 @@ import { client } from '../..';
 import { GuildModel } from '../../database/Schemas/Guild';
 import { Command } from "../../structures/Command";
 import axios from 'axios';
+import { GuildConfig } from '../../types/Guild';
 
 export default new Command({
      name: 'modify-rank',
@@ -22,15 +23,15 @@ export default new Command({
                description: 'The property of the rank you wish to modify',
                choices: [
                     {
-                         name: 'Points',
+                         name: 'points',
                          value: 'points'
                     },
                     {
-                         name: 'Next Name',
+                         name: 'next_name',
                          value: 'next_name',
                     },
                     {
-                         name: 'Previous Name',
+                         name: 'previous_name',
                          value: 'previous_name'
                     }
                ],
@@ -48,7 +49,40 @@ export default new Command({
           const key = interaction.options.getString('key');
           const value = interaction.options.getString('value');
 
-          console.log('rank:key VALUE', `${rank}:${key} ${value}`);
+          if (key === 'points') {
+               let config = await GuildModel.findOneAndUpdate({
+                    id: interaction.guildId, 
+                    "ranks.rank": rank
+               }, { 
+                    $set: {
+                         'ranks.$.points': Number(value)
+                    }
+               }, { new: true, returnDocument: 'after' });
+
+               client.updateConfig(config);
+          } else if (key === 'next_name') {
+               let config = await GuildModel.findOneAndUpdate({
+                    id: interaction.guildId, 
+                    "ranks.rank": rank
+               }, { 
+                    $set: {
+                         'ranks.$.next_name': value
+                    }
+               }, { new: true, returnDocument: 'after' });
+
+               client.updateConfig(config);
+          } else {
+               let config = await GuildModel.findOneAndUpdate({
+                    id: interaction.guildId, 
+                    "ranks.rank": rank
+               }, { 
+                    $set: {
+                         'ranks.$.previous_name': value
+                    }
+               }, { new: true, returnDocument: 'after' });
+
+               client.updateConfig(config);
+          }
 
           return interaction.followUp('Rank Modified');
      }
