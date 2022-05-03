@@ -18,7 +18,7 @@ export default new Command({
                     { name: 'Welcome Channel ID', value: `${config.welcomeChannel}`, inline: true },
                     { name: 'Roblox Group ID', value: `${config.robloxGroup}`, inline: true },
                     { name: 'Rank Count', value: `${config.ranks.length}`, inline: true },
-                    { name: 'Ranks', value: `${config.ranks.map(rank => `${rank.name} | ${rank.points} | ${rank.next_name} | ${rank.previous_name}`).join('\n')}` },
+                    { name: 'Ranks', value: `${config.ranks.map(rank => `${rank.name} | ${rank.points} | ${rank.discordId}`).join('\n')}` },
                ])
                .setTimestamp()
                .setFooter({ text: 'Imperial Monitor | Developed by Robert (ForceAegis)' });

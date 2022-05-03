@@ -1,8 +1,8 @@
 {
-     "name": "clanhub-bot",
+     "name": "imperial-monitor",
      "version": "1.0.0",
      "main": "src/index.ts",
-     "author": "Robert",
+     "author": "Robert Humphrey",
      "license": "MIT",
      "scripts": {
           "start": "ts-node src/index.ts",
@@ -15,7 +15,7 @@
           "axios": "^0.26.1",
           "discord.js": "^13.6.0",
           "dotenv": "^14.2.0",
-          "glob": "^7.2.0",
+          "glob": "7.2.0",
           "mongoose": "^6.1.7",
           "ping": "^0.4.1",
           "socket.io-client": "^4.4.1"

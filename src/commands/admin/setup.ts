@@ -39,13 +39,14 @@ export default new Command({
                     next_name: '',
                     previous_name: '',
                     obtainable,
-                    type
+                    type,
+                    discordId: ''
                });
           });
 
           let config = await GuildModel.findOneAndUpdate({ id: interaction.guildId }, { robloxGroup: id, $push: { ranks } }, { new: true, returnDocument: 'after' });
 
-          await client.updateConfig(config);
+          client.updateConfig(config);
 
           return interaction.followUp(`Got ${ranks.length} ranks`);
      }

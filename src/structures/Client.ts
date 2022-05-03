@@ -7,12 +7,15 @@ import { CommandType } from "../types/Command";
 import { GuildConfig } from "../types/Guild";
 import { Event } from "./Event";
 import { GuildModel } from '../database/Schemas/Guild'
+import { io, Socket } from "socket.io-client";
+import { ClientToServer, ServerToClient } from "../types/Socket";
 
 const globPromise = promisify(glob);
 
 export class ImperialClient extends Client {
      commands: Collection<string, CommandType> = new Collection();
      configs: Collection<string, GuildConfig> = new Collection();
+     socket: Socket<ServerToClient, ClientToServer> = io('https://imperialmonitor-api.herokuapp.com/');
      whitelistedGroups: number[] = [ 5286459, 5296237, 5438033, 5296326, 5296325, 5426149, 5296984, 5311576 ];
 
      constructor() {
@@ -20,11 +23,27 @@ export class ImperialClient extends Client {
      }
 
      async start() {
+          // let intents = (1 << 0) + 
+          
           this.registerModules();
           this.databaseConnection(process.env.mongodbUsername, process.env.mongodbPassword);
 
           const guildConfigs = await GuildModel.find({});
           this.setConfigs(guildConfigs);
+
+          this.socket.on('VERIFICATION_COMPLETE', data => {
+               let config = this.configs.get(data.server);
+               let userRank = data.user.groups.filter(group => group.id === config.robloxGroup)[0];
+               let rankDiscordId = config.ranks.filter(rank => rank.name === userRank.rank)[0];
+
+               let role = this.guilds.cache.get(config.id).roles.cache.find(role => role.id === rankDiscordId.discordId);
+               let member = this.guilds.cache.get(config.id).members.cache.get(data.user.discordId);
+
+               member.roles.add(role);
+
+               // @ts-ignore
+               this.guilds.cache.get(config.id).channels.cache.get(data.channelId).send("User Verified");
+          });
 
           this.login(process.env.token);
      }
@@ -61,11 +80,11 @@ export class ImperialClient extends Client {
           })
 
           // Events
-          const eventsFiles = await globPromise(`${__dirname}/../events/*{.ts, .js}`);
+          const eventFiles = await globPromise(`${__dirname}/../events/*{.ts, .js}`);
 
-          eventsFiles.forEach(async filePath => {
+          eventFiles.forEach(async filePath => {
                const event: Event<keyof ClientEvents> = await this.importFile(filePath);
-               
+
                this.on(event.event, event.run);
           });
      }

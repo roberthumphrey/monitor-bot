@@ -15,7 +15,7 @@ const Group = new Schema<Group>({
      rank: { type: String, required: true }
 });
 
-interface User {
+export interface User {
      discordId: string;
      username: string;
      robloxId: number;

@@ -49,4 +49,5 @@ export type Rank = {
      previous_name: string;
      obtainable: boolean;
      type: string;
+     discordId: string;
 }

@@ -1,8 +1,6 @@
 import { client } from '../..';
 import { GuildModel } from '../../database/Schemas/Guild';
 import { Command } from "../../structures/Command";
-import axios from 'axios';
-import { GuildConfig } from '../../types/Guild';
 
 export default new Command({
      name: 'modify-rank',
@@ -33,6 +31,10 @@ export default new Command({
                     {
                          name: 'previous_name',
                          value: 'previous_name'
+                    },
+                    {
+                         name: 'discordId',
+                         value: 'discordId'
                     }
                ],
                required: true
@@ -71,7 +73,7 @@ export default new Command({
                }, { new: true, returnDocument: 'after' });
 
                client.updateConfig(config);
-          } else {
+          } else if (key === 'previous_name') {
                let config = await GuildModel.findOneAndUpdate({
                     id: interaction.guildId, 
                     "ranks.rank": rank
@@ -82,8 +84,42 @@ export default new Command({
                }, { new: true, returnDocument: 'after' });
 
                client.updateConfig(config);
+          } else {
+               let config = await GuildModel.findOneAndUpdate({
+                    id: interaction.guildId, 
+                    "ranks.rank": rank
+               }, { 
+                    $set: {
+                         'ranks.$.discordId': value
+                    }
+               }, { new: true, returnDocument: 'after' });
+
+               console.log(config);
+
+               client.updateConfig(config);
           }
 
           return interaction.followUp('Rank Modified');
      }
 });
+
+/**
+ * Cadet 966247083784957952 0
+ * Trooper 966247078730801152 10
+ * Corporal 966246933398163476 25
+ * Sergeant 966246882676441099 50
+ * Staff Sergeant 966246817878642708 100
+ * Chief 966246734143561798 200
+ * Master Chief 966246684596260874
+ * Officer Cadet 966246600567586827
+ * Lieutenant 966246555558481920
+ * Captain 966246503515578399
+ * Major 966246413069598760
+ * Colonel 966246348481499168
+ * General 966246279845912588
+ * Marshal 966246208496619520
+ * Joint Chiefs of Staff 966246127114534952
+ * Imperial Ruling Council 966246070252351519
+ * Imperial Enforcer 966246016611414056
+ * His Imperial Majesty 966245829855817758
+ */

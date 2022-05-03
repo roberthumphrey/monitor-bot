@@ -9,6 +9,7 @@ interface Rank {
      previous_name: string;
      obtainable: boolean;
      type: string;
+     discordId: string;
 }
 
 const Rank = new Schema<Rank>({
@@ -19,6 +20,7 @@ const Rank = new Schema<Rank>({
      previous_name: { type: String, required: true },
      obtainable: { type: Boolean, required: true },
      type: { type: String, required: true },
+     discordId: { type: String, required: true }
 });
 
 interface Guild {
