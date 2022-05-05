@@ -7,8 +7,8 @@ import { Group, GroupRole, GroupRolesRequest, Rank } from '../../types/Group';
 export default new Command({
      name: 'setup',
      description: `Link current server to a group ID`,
-     defaultPermission: false,
-     userPermissions: ['MANAGE_GUILD'],
+     // defaultPermission: false,
+     // userPermissions: ['MANAGE_GUILD'],
      commandType: "admin",
      options: [
           {

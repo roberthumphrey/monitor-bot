@@ -6,8 +6,15 @@ type Data = {
      user: User;
 }
 
-export type ServerToClient = {
-     VERIFICATION_COMPLETE: (data: Data) => void;
+type Pong = {
+     time: number;
 }
 
-export type ClientToServer = {}
+export type ServerToClient = {
+     VERIFICATION_COMPLETE: (data: Data) => void;
+     pong: (pong: Pong) => void;
+}
+
+export type ClientToServer = {
+     ping: () => void;
+}

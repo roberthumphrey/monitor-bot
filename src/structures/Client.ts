@@ -9,6 +9,7 @@ import { Event } from "./Event";
 import { GuildModel } from '../database/Schemas/Guild'
 import { io, Socket } from "socket.io-client";
 import { ClientToServer, ServerToClient } from "../types/Socket";
+import chalk from "chalk";
 
 const globPromise = promisify(glob);
 
@@ -17,6 +18,7 @@ export class ImperialClient extends Client {
      configs: Collection<string, GuildConfig> = new Collection();
      socket: Socket<ServerToClient, ClientToServer> = io('https://imperialmonitor-api.herokuapp.com/');
      whitelistedGroups: number[] = [ 5286459, 5296237, 5438033, 5296326, 5296325, 5426149, 5296984, 5311576 ];
+     log: Function = console.log;
 
      constructor() {
           super({ intents: 32767 });
@@ -43,6 +45,17 @@ export class ImperialClient extends Client {
 
                // @ts-ignore
                this.guilds.cache.get(config.id).channels.cache.get(data.channelId).send("User Verified");
+          });
+
+          this.socket.emit('ping');
+
+          this.socket.on('pong', (pong) => {
+               let clientTime = new Date().getTime();
+               let serverTime = pong.time;
+
+               let difference = serverTime - clientTime;
+
+               this.log(`${chalk.yellow('[ASTRAL_GATEWAY]')} Gateway Latency: ${difference}ms`);
           });
 
           this.login(process.env.token);
@@ -91,8 +104,8 @@ export class ImperialClient extends Client {
 
      async databaseConnection(username: string, password: string) {
           mongoose.connect(`mongodb+srv://${username}:${password}@goliath.ydtpu.mongodb.net/galactic-empire?retryWrites=true&w=majority`).then(() => {
-               console.log(`Connected to database`);
-          }).catch(error => console.log(`Failed to connect to database`));
+               this.log(`${chalk.yellow('[DATABASE]')} Connected to database`);
+          }).catch(error => this.log(`${chalk.red('[DATABASE]')} Failed to connect to database with error: ${error}`));
      }
 
      setConfigs(guildConfigs: GuildConfig[]) {

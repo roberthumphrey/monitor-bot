@@ -6,8 +6,8 @@ export default new Command({
      name: 'modify-rank',
      description: `Modifies a specific rank's properties`,
      commandType: "admin",
-     defaultPermission: false,
-     userPermissions: ['MANAGE_GUILD'],
+     // defaultPermission: false,
+     // userPermissions: ['MANAGE_GUILD'],
      options: [
           {
                name: 'rank',

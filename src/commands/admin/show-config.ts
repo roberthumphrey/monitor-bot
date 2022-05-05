@@ -5,8 +5,8 @@ import { MessageEmbed } from 'discord.js';
 export default new Command({
      name: 'show-config',
      description: `Shows the current server config`,
-     defaultPermission: false,
-     userPermissions: ['MANAGE_GUILD'],
+     // defaultPermission: false,
+     // userPermissions: ['MANAGE_GUILD'],
      commandType: "admin",
      run: async ({ interaction }) => {
           const config = client.configs.get(interaction.guildId);
@@ -24,9 +24,5 @@ export default new Command({
                .setFooter({ text: 'Imperial Monitor | Developed by Robert (ForceAegis)' });
 
           return interaction.followUp({ embeds: [ configEmbed ] });
-
-          // return interaction.followUp(
-          //      `Guild Config for ${interaction.guild.name} (${interaction.guildId})\nWelcome Channel: ${config.welcomeChannel}\nRoblox Group ID: ${config.robloxGroup}\nRank Count: ${config.ranks.length}`
-          // );
      }
 });
