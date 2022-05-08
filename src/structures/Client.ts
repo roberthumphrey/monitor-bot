@@ -10,13 +10,14 @@ import { GuildModel } from '../database/Schemas/Guild'
 import { io, Socket } from "socket.io-client";
 import { ClientToServer, ServerToClient } from "../types/Socket";
 import chalk from "chalk";
+import { pongReceived, verificationComplete } from "./Functions";
 
 const globPromise = promisify(glob);
 
 export class ImperialClient extends Client {
      commands: Collection<string, CommandType> = new Collection();
      configs: Collection<string, GuildConfig> = new Collection();
-     socket: Socket<ServerToClient, ClientToServer> = io('https://imperialmonitor-api.herokuapp.com/');
+     socket: Socket<ServerToClient, ClientToServer> = io('wss://imperialmonitor-api.herokuapp.com/');
      whitelistedGroups: number[] = [ 5286459, 5296237, 5438033, 5296326, 5296325, 5426149, 5296984, 5311576 ];
      log: Function = console.log;
 
@@ -24,39 +25,19 @@ export class ImperialClient extends Client {
           super({ intents: 32767 });
      }
 
-     async start() {
-          // let intents = (1 << 0) + 
-          
+     async start() {          
           this.registerModules();
           this.databaseConnection(process.env.mongodbUsername, process.env.mongodbPassword);
 
           const guildConfigs = await GuildModel.find({});
           this.setConfigs(guildConfigs);
 
-          this.socket.on('VERIFICATION_COMPLETE', data => {
-               let config = this.configs.get(data.server);
-               let userRank = data.user.groups.filter(group => group.id === config.robloxGroup)[0];
-               let rankDiscordId = config.ranks.filter(rank => rank.name === userRank.rank)[0];
+          this.socket.on('VERIFICATION_COMPLETE', data => verificationComplete(data));
 
-               let role = this.guilds.cache.get(config.id).roles.cache.find(role => role.id === rankDiscordId.discordId);
-               let member = this.guilds.cache.get(config.id).members.cache.get(data.user.discordId);
+          let time = new Date().getTime();
 
-               member.roles.add(role);
-
-               // @ts-ignore
-               this.guilds.cache.get(config.id).channels.cache.get(data.channelId).send("User Verified");
-          });
-
-          this.socket.emit('ping');
-
-          this.socket.on('pong', (pong) => {
-               let clientTime = new Date().getTime();
-               let serverTime = pong.time;
-
-               let difference = serverTime - clientTime;
-
-               this.log(`${chalk.yellow('[ASTRAL_GATEWAY]')} Gateway Latency: ${difference}ms`);
-          });
+          this.socket.emit('ping', { time });
+          this.socket.on('pong', pong => pongReceived(pong));
 
           this.login(process.env.token);
      }
@@ -103,9 +84,12 @@ export class ImperialClient extends Client {
      }
 
      async databaseConnection(username: string, password: string) {
-          mongoose.connect(`mongodb+srv://${username}:${password}@goliath.ydtpu.mongodb.net/galactic-empire?retryWrites=true&w=majority`).then(() => {
-               this.log(`${chalk.yellow('[DATABASE]')} Connected to database`);
-          }).catch(error => this.log(`${chalk.red('[DATABASE]')} Failed to connect to database with error: ${error}`));
+          let uri = `mongodb+srv://${username}:${password}@goliath.ydtpu.mongodb.net/galactic-empire?retryWrites=true&w=majority`
+          mongoose.connect(uri);
+
+          let connection = mongoose.connection;
+          connection.on('open', this.log.bind(console, `${chalk.yellow('[DATABASE]')} Connected to Astral Database`));
+          connection.on('error', this.log.bind(console, 'MongoDB connection error:'));
      }
 
      setConfigs(guildConfigs: GuildConfig[]) {

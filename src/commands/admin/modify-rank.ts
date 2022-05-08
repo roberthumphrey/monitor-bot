@@ -99,7 +99,7 @@ export default new Command({
                client.updateConfig(config);
           }
 
-          return interaction.followUp('Rank Modified');
+          return interaction.reply('Rank Modified');
      }
 });
 

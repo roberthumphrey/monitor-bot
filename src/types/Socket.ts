@@ -1,12 +1,12 @@
 import { User } from "../database/Schemas/User";
 
-type Data = {
+export type Data = {
      channelId: string;
      server: string;
      user: User;
 }
 
-type Pong = {
+export type Pong = {
      time: number;
 }
 
@@ -16,5 +16,5 @@ export type ServerToClient = {
 }
 
 export type ClientToServer = {
-     ping: () => void;
+     ping: (data: Object) => void;
 }

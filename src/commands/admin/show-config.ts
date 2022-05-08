@@ -23,6 +23,6 @@ export default new Command({
                .setTimestamp()
                .setFooter({ text: 'Imperial Monitor | Developed by Robert (ForceAegis)' });
 
-          return interaction.followUp({ embeds: [ configEmbed ] });
+          return interaction.reply({ embeds: [ configEmbed ] });
      }
 });

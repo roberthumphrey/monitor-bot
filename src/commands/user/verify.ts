@@ -77,6 +77,6 @@ export default new Command({
                .setTimestamp()
                .setFooter({ text: 'Imperial Monitor | Developed by Robert (ForceAegis)' });
 
-          return interaction.followUp({ embeds: [ verificationEmbed ] });
+          return interaction.reply({ embeds: [ verificationEmbed ] });
      }
 });

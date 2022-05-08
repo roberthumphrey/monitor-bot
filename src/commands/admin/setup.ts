@@ -48,6 +48,6 @@ export default new Command({
 
           client.updateConfig(config);
 
-          return interaction.followUp(`Got ${ranks.length} ranks`);
+          return interaction.reply(`Got ${ranks.length} ranks`);
      }
 });
